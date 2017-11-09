@@ -332,6 +332,10 @@ tests:
       text: "Go to http://example.com/view/slug-url-?foo=bar"
       expected: ["http://example.com/view/slug-url-?foo=bar"]
 
+    - description: "Extract URLs with an en dash in the path"
+      text: "Go to https://en.m.wikipedia.org/wiki/Hatfield–McCoy_feud please"
+      expected: ["https://en.m.wikipedia.org/wiki/Hatfield–McCoy_feud"]
+
     - description: "Extract URLs beginning with a space"
       text: "@user Try http:// example.com/path"
       expected: ["example.com/path"]
@@ -347,6 +351,10 @@ tests:
     - description: "Extract URLs with and without protocol surrounded by CJK characters"
       text: "http://twitter.com/これは日本語です。example.com中国語http://t.co/abcde한국twitter.comテストexample2.comテストhttp://twitter.com/abcde"
       expected: ["http://twitter.com/", "example.com", "http://t.co/abcde", "twitter.com", "example2.com", "http://twitter.com/abcde"]
+
+    - description: "Extract URLs with protocol and path containing Cyrillic characters"
+      text: "Go to http://twitter.com/Русские_слова"
+      expected: ["http://twitter.com/Русские_слова"]
 
     - description: "DO NOT extract short URLs without protocol on ccTLD domains without path"
       text: "twitter.jp日本語it.so中国語foo.jp it.so foo.jp"
@@ -576,6 +584,14 @@ tests:
         - url: "http://t.co/FNkPfmii"
           indices: [136, 156]
 
+    - description: "Properly extract URL that contains t.co in referer"
+      text: "http://www.foo.com?referer=https://t.co/abcde http://t.co/xyzzy"
+      expected:
+        - url: "http://www.foo.com?referer=https://t.co/abcde"
+          indices: [0, 45]
+        - url: "http://t.co/xyzzy"
+          indices: [46, 63]
+
     - description: "Extract correct indices for duplicate instances of the same URL"
       text: "http://t.co http://t.co"
       expected:
@@ -601,6 +617,30 @@ tests:
           indices: [42, 64]
 
   hashtags:
+    - description: "Extract hashtag after emoji without variant selector (uFE0E or uFE0F)"
+      text: "a ✌#hashtag here"
+      expected: ["hashtag"]
+
+    - description: "Extract hashtag after emoji with variant selector FE0E"
+      text: "a ✌︎#hashtag here"
+      expected: ["hashtag"]
+
+    - description: "Extract hashtag after emoji with variant selector FE0F"
+      text: "a ✌️#hashtag here"
+      expected: ["hashtag"]
+
+    - description: "Extract hashtag after emoji with skin tone without variant selector (FE0E or FE0F)"
+      text: "a ✌🏿#hashtag here"
+      expected: ["hashtag"]
+
+    - description: "Extract hashtag after emoji with skin tone with variant selector FE0F"
+      text: "a ✌🏿️#hashtag here"
+      expected: ["hashtag"]
+
+    - description: "Extract hashtag after emoji with zero-width-joiner"
+      text: "a 👨‍👩‍👧#hashtag here"
+      expected: ["hashtag"]
+
     - description: "Extract an all-alpha hashtag"
       text: "a #hashtag here"
       expected: ["hashtag"]
@@ -733,6 +773,14 @@ tests:
       text: "#云々 #学問のすゝめ #いすゞ #各〻 #各〃"
       expected: ["云々", "学問のすゝめ", "いすゞ", "各〻", "各〃"]
 
+    - description: "Extract hashtag with fullwidth tilde"
+      text: "#メ～テレ ハッシュタグ内で～が認識されず"
+      expected: ["メ～テレ"]
+
+    - description: "Extract hashtag with wave dash"
+      text: "#メ〜テレ ハッシュタグ内で～が認識されず"
+      expected: ["メ〜テレ"]
+
     - description: "Hashtags with ş (U+015F)"
       text: "Here’s a test tweet for you: #Ateş #qrşt #ştu #ş"
       expected: ["Ateş", "qrşt", "ştu", "ş"]
@@ -806,8 +854,8 @@ tests:
       expected: ["বাংলা","ગુજરાતી","ಕನ್ನಡ","മലയാളം","ଓଡ଼ିଆ","ਪੰਜਾਬੀ","සිංහල","தமிழ்","తెలుగు"]
 
     - description: "Extract Tibetan hashtags"
-      text: "#བོད་སྐད་ #བོད་སྐད།"
-      expected: ["བོད་སྐད་","བོད་སྐད།"]
+      text: "#བོད་སྐད་ #བོད་སྐད"
+      expected: ["བོད་སྐད་","བོད་སྐད"]
 
     - description: "Extract Khmer, Burmese, Laotian hashtags"
       text: "#មហាត្មះគន្ធី #မြင့်မြတ်သော #ຊີວະສາດ"
@@ -821,9 +869,26 @@ tests:
       text: "#Մահաթմա #მაჰათმა"
       expected: ["Մահաթմա","მაჰათმა"]
 
+    - description: "Extract hashtag with middle dot"
+      text: "#il·lusió"
+      expected: ["il·lusió"]
+
     - description: "DO NOT extract hashtags without a letter"
       text: "#_ #1_2 #122 #〃"
       expected: []
+
+  hashtags_from_astral:
+    - description: "Extract hashtag with letter from astral plane (U+20021)"
+      text: "#\U00020021"
+      expected: ["\U00020021"]
+
+    - description: "Extract hashtag with letter plus marker from astral plane (U+16f04 U+16f51)"
+      text: "#\U00016f04\U00016f51"
+      expected: ["\U00016f04\U00016f51"]
+
+    - description: "Extract hashtag with letter plus number from astral plane (U+104a0)"
+      text: "#\U00000041\U000104a0"
+      expected: ["A\U000104a0"]
 
   hashtags_with_indices:
     - description: "Extract a hastag at the start"

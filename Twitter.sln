@@ -1,6 +1,8 @@
 ﻿
-Microsoft Visual Studio Solution File, Format Version 11.00
-# Visual Studio 2010
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio 15
+VisualStudioVersion = 15.0.27004.2006
+MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twitter.Text", "Twitter.Text\Twitter.Text.csproj", "{92834A0E-7BD3-4FA3-85A4-ED1468038268}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Twitter.Text.Tests", "Twitter.Text.Tests\Twitter.Text.Tests.csproj", "{CAB33F40-FA5F-47C6-A0BB-96CEED4568A4}"
@@ -22,5 +24,8 @@ Global
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {BBA70547-61E5-458B-8DE6-6C4C6A712B34}
 	EndGlobalSection
 EndGlobal

@@ -79,7 +79,7 @@ namespace Twitter.Text
                 int NUM_RUNS = 100;
                 for(int i = 0; i < NUM_RUNS - 1; i++)
                 {
-                    Regex.VALID_URL.Match(text).Success;
+                    var success = Regex.VALID_URL.Match(text).Success;
                 }
                 bool isValid = Regex.VALID_URL.Match(text).Success;
                 stopWatch.Stop();

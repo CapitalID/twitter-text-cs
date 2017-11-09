@@ -25,7 +25,7 @@ namespace Twitter.Text
         /// <returns></returns>
         protected IList<dynamic> LoadTestSection<TExpected>(string sectionName)
         {
-            using (StreamReader stream = new StreamReader(Path.Combine("twitter-text-conformance", __YmlFile)))
+            using (StreamReader stream = new StreamReader(Path.Combine(NUnit.Framework.TestContext.CurrentContext.WorkDirectory,"twitter-text-conformance", __YmlFile)))
             {
                 YamlStream yaml = new YamlStream();
                 yaml.Load(stream);

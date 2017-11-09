@@ -103,6 +103,9 @@ namespace Twitter.Text
                 "\u0300-\u036f" +                                                               // Combining diacritics
                 "\u1e00-\u1eff";                                                                // Latin Extended Additional (mostly for Vietnamese)
 
+
+            String CYRILLIC_CHARS = "\\u0400-\\u04ff";
+
             String RTL_CHARS =
                 "\u0600-\u06FF" +
                 "\u0750-\u077F" +
@@ -131,15 +134,13 @@ namespace Twitter.Text
                                            "\\u3003" + // DITTO MARK
                                            "\\u0f0b" + // TIBETAN MARK INTERSYLLABIC TSHEG
                                            "\\u0f0c" + // TIBETAN MARK DELIMITER TSHEG BSTAR
-                                           "\\u0f0d";  // TIBETAN MARK SHAD
+                                           "\\u00b7";  // MIDDLE DOT
 
             String HASHTAG_LETTERS_NUMERALS = HASHTAG_LETTERS + HASHTAG_NUMERALS + HASHTAG_SPECIAL_CHARS;
 
             String HASHTAG_LETTERS_SET = "[" + HASHTAG_LETTERS + "]";
 
             String HASHTAG_LETTERS_NUMERALS_SET = "[" + HASHTAG_LETTERS_NUMERALS + "]";
-
-            String VALID_HASHTAG_STRING = "(^|[^&" + HASHTAG_LETTERS_NUMERALS + "])(#|\uFF03)(?!\uFE0F|\u20E3)(" + HASHTAG_LETTERS_NUMERALS_SET + "*" + HASHTAG_LETTERS_SET + HASHTAG_LETTERS_NUMERALS_SET + "*)";
 
             //
             // URL related patterns
@@ -164,27 +165,27 @@ namespace Twitter.Text
                 "(?:" +                                                   // subdomains + domain + TLD
                     URL_VALID_SUBDOMAIN + "+" + URL_VALID_DOMAIN_NAME +   // e.g. www.twitter.com, foo.co.jp, bar.co.uk
                     "(?:" + URL_VALID_GTLD + "|" + URL_VALID_CCTLD + "|" + URL_PUNYCODE + ")" +
-                    ")" +
+                  ")" +
                 "|(?:" +                                                  // domain + gTLD + some ccTLD
-                    URL_VALID_DOMAIN_NAME +                                 // e.g. twitter.com
-                    "(?:" + URL_VALID_GTLD + "|" + URL_PUNYCODE + "|" + SPECIAL_URL_VALID_CCTLD + ")" +
+                  URL_VALID_DOMAIN_NAME +                                 // e.g. twitter.com
+                  "(?:" + URL_VALID_GTLD + "|" + URL_PUNYCODE + "|" + SPECIAL_URL_VALID_CCTLD + ")" +
                 ")" +
                 "|(?:" + "(?<=https?://)" +
-                    "(?:" +
+                  "(?:" +
                     "(?:" + URL_VALID_DOMAIN_NAME + URL_VALID_CCTLD + ")" +  // protocol + domain + ccTLD
                     "|(?:" +
-                        URL_VALID_UNICODE_CHARS + "+\\." +                     // protocol + unicode domain + TLD
-                        "(?:" + URL_VALID_GTLD + "|" + URL_VALID_CCTLD + ")" +
+                      URL_VALID_UNICODE_CHARS + "+\\." +                     // protocol + unicode domain + TLD
+                      "(?:" + URL_VALID_GTLD + "|" + URL_VALID_CCTLD + ")" +
                     ")" +
-                    ")" +
+                  ")" +
                 ")" +
                 "|(?:" +                                                  // domain + ccTLD + '/'
-                    URL_VALID_DOMAIN_NAME + URL_VALID_CCTLD + "(?=/)" +     // e.g. t.co/
+                  URL_VALID_DOMAIN_NAME + URL_VALID_CCTLD + "(?=/)" +     // e.g. t.co/
                 ")";
 
             String URL_VALID_PORT_NUMBER = "(?>[0-9]+)";
 
-            String URL_VALID_GENERAL_PATH_CHARS = "[a-z\\p{IsCyrillic}0-9!\\*';:=\\+,.\\$/%#\\[\\]\\-_~\\|&@" + LATIN_ACCENTS_CHARS + "]";
+            String URL_VALID_GENERAL_PATH_CHARS = "[a-z0-9!\\*';:=\\+,.\\$/%#\\[\\]\\-\\u2013_~\\|&@" + LATIN_ACCENTS_CHARS + CYRILLIC_CHARS + "]";
 
             //
             // Allow URL paths to contain up to two nested levels of balanced parens
@@ -212,7 +213,7 @@ namespace Twitter.Text
             // Valid end-of-path characters (so /foo. does not gobble the period).
             //   1. Allow =&# for empty URL parameters and other URL-join artifacts
             //
-            String URL_VALID_PATH_ENDING_CHARS = "[a-z\\p{IsCyrillic}0-9=_#/\\-\\+" + LATIN_ACCENTS_CHARS + "]|(?:" + URL_BALANCED_PARENS + ")";
+            String URL_VALID_PATH_ENDING_CHARS = "[a-z0-9=_#/\\-\\+" + LATIN_ACCENTS_CHARS + CYRILLIC_CHARS + "]|(?:" + URL_BALANCED_PARENS + ")";
 
             String URL_VALID_PATH =
                 "(?:" +
@@ -225,7 +226,7 @@ namespace Twitter.Text
 
             String URL_VALID_URL_QUERY_CHARS = "[a-z0-9!?\\*'\\(\\);:&=\\+\\$/%#\\[\\]\\-_\\.,~\\|@]";
 
-            String URL_VALID_URL_QUERY_ENDING_CHARS = "[a-z0-9_&=#/]";
+            String URL_VALID_URL_QUERY_ENDING_CHARS = "[a-z0-9_&=#/-]";
 
             String VALID_URL_PATTERN_STRING =
                 "(" +                                                   //  $1 total match
@@ -258,7 +259,7 @@ namespace Twitter.Text
 
             INVALID_CHARACTERS = new Pattern(INVALID_CONTROL_CHARS, RegexOptions.IgnoreCase);
 
-            VALID_HASHTAG = new Pattern(VALID_HASHTAG_STRING, RegexOptions.IgnoreCase);
+            VALID_HASHTAG = new Pattern("(^|\\uFE0E|\\uFE0F|[^&" + HASHTAG_LETTERS_NUMERALS + "])(#|\uFF03)(?!\uFE0F|\u20E3)(" + HASHTAG_LETTERS_NUMERALS_SET + "*" + HASHTAG_LETTERS_SET + HASHTAG_LETTERS_NUMERALS_SET + "*)", RegexOptions.IgnoreCase);
 
             INVALID_HASHTAG_MATCH_END = new Pattern("^(?:[#＃]|://)");
 

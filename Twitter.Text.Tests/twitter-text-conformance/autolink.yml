@@ -36,6 +36,14 @@ tests:
       text: "RT@username: long Tweet is loooong"
       expected: "RT@<a class=\"tweet-url username\" href=\"https://twitter.com/username\">username</a>: long Tweet is loooong"
 
+    - description: "Autolink alternate RT format in middle of text"
+      text: "Check out RT:@username yas"
+      expected: "Check out RT:@<a class=\"tweet-url username\" href=\"https://twitter.com/username\">username</a> yas"
+
+    - description: "DO NOT Autolink domain of email address ending in RT like support@example.com"
+      text: "Email support@example.com"
+      expected: "Email support@example.com"
+
     - description: "DO NOT Autolink username followed by accented latin characters"
       text: "@aliceìnheiro something something"
       expected: "@aliceìnheiro something something"
@@ -141,6 +149,14 @@ tests:
     - description: "DO NOT Autolink hashtag preceded by a letter"
       text: "text#hashtag"
       expected: "text#hashtag"
+
+    - description: "DO NOT Autolink hashtag that begins with \ufe0f (Emoji style hash sign)"
+      text: "#️hashtag"
+      expected: "#️hashtag"
+
+    - description: "DO NOT Autolink hashtag that begins with \ufe0f (Keycap style hash sign)"
+      text: "#⃣hashtag"
+      expected: "#⃣hashtag"
 
     - description: "Autolink multiple hashtags"
       text: "text #hashtag1 #hashtag2"
@@ -687,6 +703,10 @@ tests:
     - description: "Autolink URL should link paths containing accented characters"
       text: "See: http://example.com/café"
       expected: "See: <a href=\"http://example.com/café\">http://example.com/café</a>"
+
+    - description: "Autolink URL should link paths containing Cyrillic characters"
+      text: "Go to http://example.com/Русские_слова maybe?"
+      expected: "Go to <a href=\"http://example.com/Русские_слова\">http://example.com/Русские_слова</a> maybe?"
 
     - description: "Autolink URL should not link URL without protocol"
       text: "See: www.twitter.com or twitter.com/twitter"
